@@ -9,7 +9,6 @@ Write-Host "Setting up WezTerm config..."
 $configDir = "$env:USERPROFILE\.config\wezterm"
 New-Item -ItemType Directory -Force -Path $configDir | Out-Null
 Copy-Item "$scriptDir\wezterm.lua" "$configDir\wezterm.lua" -Force
-Copy-Item "$scriptDir\background.png" "$configDir\background.png" -Force
 Write-Host "WezTerm config copied to $configDir"
 
 # PowerShell profile
@@ -19,13 +18,13 @@ New-Item -ItemType Directory -Force -Path $profileDir | Out-Null
 Copy-Item "$scriptDir\profile.ps1" $PROFILE -Force
 Write-Host "PowerShell profile copied to $PROFILE"
 
-# Iosevka font
-Write-Host "Installing Iosevka font..."
+# Geist Mono Nerd Font
+Write-Host "Installing Geist Mono Nerd Font..."
 try {
-    winget install DEVCOM.IosevkaNerdFont --silent --accept-package-agreements --accept-source-agreements
-    Write-Host "Iosevka Nerd Font installed."
+    winget install DEVCOM.GeistMonoNerdFont --silent --accept-package-agreements --accept-source-agreements
+    Write-Host "Geist Mono Nerd Font installed."
 } catch {
-    Write-Host "winget install failed. Download Iosevka Nerd Font manually from:"
+    Write-Host "winget install failed. Download Geist Mono Nerd Font manually from:"
     Write-Host "https://www.nerdfonts.com/font-downloads"
 }
 

@@ -18,7 +18,7 @@ Personal WezTerm terminal config with cross-platform support for macOS and Windo
 ### macOS
 
 ```bash
-git clone git@github.com:Chamberja/jterm.git
+git clone git@github.com:AimzJson/jterm.git
 cd jterm
 ./setup.sh
 ```
@@ -28,7 +28,7 @@ Restart WezTerm after setup.
 ### Windows
 
 ```powershell
-git clone git@github.com:Chamberja/jterm.git
+git clone git@github.com:AimzJson/jterm.git
 cd jterm
 .\setup.ps1
 ```

@@ -1,4 +1,5 @@
 export PATH="$HOME/.local/bin:$PATH"
+export LESS="-FRX"
 
 # Prompt
 autoload -Uz vcs_info add-zsh-hook
@@ -40,4 +41,9 @@ fi
 # zoxide
 if command -v zoxide &>/dev/null; then
   eval "$(zoxide init zsh)"
+fi
+
+# bat
+if command -v bat &>/dev/null; then
+  alias cat="bat --paging=never"
 fi

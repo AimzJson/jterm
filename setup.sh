@@ -14,8 +14,8 @@ fi
 
 # Packages
 echo "Installing packages..."
-brew install zsh-autosuggestions fzf zoxide eza
-brew install --cask font-iosevka-nerd-font
+brew install zsh-autosuggestions fzf zoxide eza bat git-delta lazygit
+brew install --cask font-geist-mono-nerd-font
 
 # fzf shell integration
 echo "Setting up fzf..."
@@ -25,7 +25,6 @@ echo "Setting up fzf..."
 echo "Setting up WezTerm config..."
 mkdir -p "$HOME/.config/wezterm"
 cp "$SCRIPT_DIR/wezterm.lua" "$HOME/.config/wezterm/wezterm.lua"
-cp "$SCRIPT_DIR/background.png" "$HOME/.config/wezterm/background.png"
 
 # zsh config
 echo "Setting up zsh config..."
