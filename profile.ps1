@@ -1,6 +1,14 @@
-# Starship prompt
-if (Get-Command starship -ErrorAction SilentlyContinue) {
-    Invoke-Expression (&starship init powershell)
+# Prompt: ~/dir (branch) ❯
+function prompt {
+    $dir = $PWD.Path -replace [regex]::Escape($HOME), '~'
+
+    $branch = ''
+    $b = git branch --show-current 2>$null
+    if ($LASTEXITCODE -eq 0 -and $b) {
+        $branch = " `e[36m($b)`e[0m"
+    }
+
+    "`e[32m$dir`e[0m$branch `e[32m❯`e[0m "
 }
 
 # eza

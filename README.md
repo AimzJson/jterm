@@ -9,7 +9,7 @@ Personal WezTerm terminal config with cross-platform support for macOS and Windo
 - Tokyo Night theme with frosted glass transparency
 - 2x2 pane grid on startup (65% / 35% split)
 - Geist Mono Nerd Font
-- Starship prompt with git branch and status
+- Custom prompt with directory and git branch
 - Status bar with battery, date and time
 - Pane navigation and zoom keybindings
 - Shell config with autosuggestions, fzf, eza, zoxide, bat, lazygit, delta
@@ -99,5 +99,3 @@ z projects    # jumps to the best match for "projects"
 zi            # interactive fuzzy directory picker
 ```
 
-### starship
-Cross-platform prompt. Shows directory, git branch, git status, and command duration automatically. Config at `~/.config/starship/starship.toml`.

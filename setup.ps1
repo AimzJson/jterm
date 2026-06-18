@@ -18,12 +18,6 @@ New-Item -ItemType Directory -Force -Path $profileDir | Out-Null
 Copy-Item "$scriptDir\profile.ps1" $PROFILE -Force
 Write-Host "PowerShell profile copied to $PROFILE"
 
-# Starship config
-Write-Host "Setting up starship config..."
-$starshipDir = "$env:USERPROFILE\.config\starship"
-New-Item -ItemType Directory -Force -Path $starshipDir | Out-Null
-Copy-Item "$scriptDir\starship.toml" "$starshipDir\starship.toml" -Force
-
 # Lazygit config
 Write-Host "Setting up lazygit config..."
 $lazygitDir = "$env:USERPROFILE\.config\lazygit"
@@ -92,15 +86,6 @@ try {
     Write-Host "lazygit installed."
 } catch {
     Write-Host "lazygit install failed. Download manually from https://github.com/jesseduffield/lazygit/releases"
-}
-
-# starship
-Write-Host "Installing starship..."
-try {
-    winget install Starship.Starship --silent --accept-package-agreements --accept-source-agreements
-    Write-Host "starship installed."
-} catch {
-    Write-Host "starship install failed. Download manually from https://starship.rs"
 }
 
 # PSFzf module
