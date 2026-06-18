@@ -14,7 +14,7 @@ fi
 
 # Packages
 echo "Installing packages..."
-brew install zsh-autosuggestions fzf zoxide eza bat git-delta lazygit
+brew install zsh-autosuggestions fzf zoxide eza bat git-delta lazygit starship
 brew install --cask font-geist-mono-nerd-font
 
 # fzf shell integration
@@ -25,6 +25,26 @@ echo "Setting up fzf..."
 echo "Setting up WezTerm config..."
 mkdir -p "$HOME/.config/wezterm"
 cp "$SCRIPT_DIR/wezterm.lua" "$HOME/.config/wezterm/wezterm.lua"
+
+# Starship config
+echo "Setting up starship config..."
+mkdir -p "$HOME/.config/starship"
+cp "$SCRIPT_DIR/starship.toml" "$HOME/.config/starship/starship.toml"
+
+# Lazygit config
+echo "Setting up lazygit config..."
+mkdir -p "$HOME/.config/lazygit"
+cp "$SCRIPT_DIR/lazygit.yml" "$HOME/.config/lazygit/config.yml"
+
+# Git delta config
+echo "Configuring git delta..."
+git config --global core.pager delta
+git config --global interactive.diffFilter "delta --color-only"
+git config --global delta.navigate true
+git config --global delta.paging never
+git config --global delta.syntax-theme "Dracula"
+git config --global merge.conflictstyle diff3
+git config --global diff.colorMoved default
 
 # zsh config
 echo "Setting up zsh config..."

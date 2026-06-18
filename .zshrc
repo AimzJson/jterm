@@ -1,12 +1,8 @@
 export PATH="$HOME/.local/bin:$PATH"
 export LESS="-FRX"
 
-# Prompt
-autoload -Uz vcs_info add-zsh-hook
-add-zsh-hook precmd vcs_info
-zstyle ':vcs_info:git:*' formats ' %F{cyan}(%b)%f'
-setopt PROMPT_SUBST
-PROMPT='%F{green}%~%f${vcs_info_msg_0_} %F{green}❯%f '
+# Starship prompt
+eval "$(starship init zsh)"
 
 # Completion
 autoload -Uz compinit && compinit

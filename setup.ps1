@@ -18,6 +18,18 @@ New-Item -ItemType Directory -Force -Path $profileDir | Out-Null
 Copy-Item "$scriptDir\profile.ps1" $PROFILE -Force
 Write-Host "PowerShell profile copied to $PROFILE"
 
+# Starship config
+Write-Host "Setting up starship config..."
+$starshipDir = "$env:USERPROFILE\.config\starship"
+New-Item -ItemType Directory -Force -Path $starshipDir | Out-Null
+Copy-Item "$scriptDir\starship.toml" "$starshipDir\starship.toml" -Force
+
+# Lazygit config
+Write-Host "Setting up lazygit config..."
+$lazygitDir = "$env:USERPROFILE\.config\lazygit"
+New-Item -ItemType Directory -Force -Path $lazygitDir | Out-Null
+Copy-Item "$scriptDir\lazygit.yml" "$lazygitDir\config.yml" -Force
+
 # Geist Mono Nerd Font
 Write-Host "Installing Geist Mono Nerd Font..."
 try {
@@ -55,6 +67,42 @@ try {
     Write-Host "zoxide install failed. Download manually from https://github.com/ajeetdsouza/zoxide/releases"
 }
 
+# bat
+Write-Host "Installing bat..."
+try {
+    winget install sharkdp.bat --silent --accept-package-agreements --accept-source-agreements
+    Write-Host "bat installed."
+} catch {
+    Write-Host "bat install failed. Download manually from https://github.com/sharkdp/bat/releases"
+}
+
+# delta
+Write-Host "Installing delta..."
+try {
+    winget install dandavison.delta --silent --accept-package-agreements --accept-source-agreements
+    Write-Host "delta installed."
+} catch {
+    Write-Host "delta install failed. Download manually from https://github.com/dandavison/delta/releases"
+}
+
+# lazygit
+Write-Host "Installing lazygit..."
+try {
+    winget install JesseDuffield.lazygit --silent --accept-package-agreements --accept-source-agreements
+    Write-Host "lazygit installed."
+} catch {
+    Write-Host "lazygit install failed. Download manually from https://github.com/jesseduffield/lazygit/releases"
+}
+
+# starship
+Write-Host "Installing starship..."
+try {
+    winget install Starship.Starship --silent --accept-package-agreements --accept-source-agreements
+    Write-Host "starship installed."
+} catch {
+    Write-Host "starship install failed. Download manually from https://starship.rs"
+}
+
 # PSFzf module
 Write-Host "Installing PSFzf PowerShell module..."
 try {
@@ -63,6 +111,16 @@ try {
 } catch {
     Write-Host "PSFzf install failed. Run manually: Install-Module PSFzf -Scope CurrentUser"
 }
+
+# Git delta config
+Write-Host "Configuring git delta..."
+git config --global core.pager delta
+git config --global interactive.diffFilter "delta --color-only"
+git config --global delta.navigate true
+git config --global delta.paging never
+git config --global delta.syntax-theme "Dracula"
+git config --global merge.conflictstyle diff3
+git config --global diff.colorMoved default
 
 Write-Host ""
 Write-Host "Setup complete. Restart WezTerm and PowerShell to apply changes."
