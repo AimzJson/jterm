@@ -14,11 +14,14 @@ config.cursor_blink_rate = 0
 config.audible_bell = 'Disabled'
 config.scrollback_lines = 3500
 
+-- Shell
+if is_windows then
+  config.default_prog = { 'pwsh', '-NoLogo' }
+end
+
 -- Startup layout
-local function make_grid(window, pane)
-  local top_right = pane:split { direction = 'Right', size = 0.35 }
-  pane:split { direction = 'Bottom', size = 0.5 }
-  top_right:split { direction = 'Bottom', size = 0.5 }
+local function make_layout(pane)
+  pane:split { direction = 'Bottom', size = 0.2 }
   pane:activate()
 end
 
@@ -31,7 +34,7 @@ wezterm.on('gui-startup', function()
     gui:maximize()
   end
   wezterm.time.call_after(0.8, function()
-    make_grid(window, pane)
+    make_layout(pane)
   end)
 end)
 
@@ -100,6 +103,7 @@ config.hide_tab_bar_if_only_one_tab = false
 config.use_fancy_tab_bar = false
 config.tab_bar_at_bottom = false
 config.show_new_tab_button_in_tab_bar = false
+config.tab_max_width = 32
 
 config.colors.tab_bar = {
   background = '#16161E',
@@ -108,6 +112,58 @@ config.colors.tab_bar = {
   new_tab      = { bg_color = '#16161E', fg_color = '#414868' },
 }
 
+-- Agent deck: tab status dots + notifications. Its built-in right status is
+-- disabled so the counts render inside our own status handler below.
+-- Registered before that handler so agent state is fresh when it reads counts.
+local agent_deck = wezterm.plugin.require 'https://github.com/Eric162/wezterm-agent-deck'
+agent_deck.apply_to_config(config, {
+  update_interval = 1000,
+  right_status = { enabled = false },
+  colors = {
+    working  = '#9ECE6A',
+    waiting  = '#E0AF68',
+    idle     = '#7AA2F7',
+    inactive = '#414868',
+  },
+})
+
+-- Agent quota exposes no API for its status text, only an update-status
+-- handler that writes straight to the window. Capture that handler at
+-- registration and run it against a stub window so the text can be composed
+-- into our own right status instead of overwriting it.
+local function capture_quota_status(plugin, opts)
+  local handler
+  local register = wezterm.on
+  wezterm.on = function(event, callback)
+    if event == 'update-status' then
+      handler = callback
+    else
+      register(event, callback)
+    end
+  end
+  plugin.apply_to_config(config, opts)
+  wezterm.on = register
+
+  return function(pane)
+    if not handler then return '' end
+    local text = ''
+    handler({ set_right_status = function(_, status) text = status end }, pane)
+    return text
+  end
+end
+
+local quota_status = capture_quota_status(
+  wezterm.plugin.require 'https://github.com/M-Marbouh/agent-quota.wezterm',
+  {
+    position = 'right',
+    layout = 'compact',
+    -- Drops providers whose CLI isn't running; Codex is never used here
+    hide_inactive = true,
+    -- Default CTRL+SHIFT+U would shadow WezTerm's built-in CharSelect
+    dashboard_key = false,
+  }
+)
+
 local function sep()
   return {
     { Foreground = { Color = '#414868' } },
@@ -115,8 +171,27 @@ local function sep()
   }
 end
 
-wezterm.on('update-status', function(window)
+local AGENT_STATUS_ORDER = { 'waiting', 'working' }
+
+wezterm.on('update-status', function(window, pane)
   local segments = {}
+
+  local quota = quota_status(pane)
+  if quota ~= '' then
+    table.insert(segments, { Text = quota })
+    for _, v in ipairs(sep()) do table.insert(segments, v) end
+  end
+
+  local counts = agent_deck.count_agents_by_status()
+  for _, status in ipairs(AGENT_STATUS_ORDER) do
+    if counts[status] > 0 then
+      for _, v in ipairs({
+        { Foreground = { Color = agent_deck.get_status_color(status) } },
+        { Text = agent_deck.get_status_icon(status) .. ' ' .. counts[status] .. ' ' .. status },
+      }) do table.insert(segments, v) end
+      for _, v in ipairs(sep()) do table.insert(segments, v) end
+    end
+  end
 
   for _, b in ipairs(wezterm.battery_info()) do
     local plugged_in = b.state == 'Charging' or b.state == 'Full'
@@ -153,7 +228,7 @@ config.keys = {
     mods = new_tab_key,
     action = wezterm.action_callback(function(window, _)
       local _, pane = window:mux_window():spawn_tab {}
-      make_grid(window, pane)
+      make_layout(pane)
     end),
   },
   { key = 'LeftArrow',  mods = mod_key, action = wezterm.action.ActivatePaneDirection 'Left' },
@@ -162,15 +237,6 @@ config.keys = {
   { key = 'DownArrow',  mods = mod_key, action = wezterm.action.ActivatePaneDirection 'Down' },
   { key = 'z',          mods = mod_key, action = wezterm.action.TogglePaneZoomState },
 }
-
--- Agent quota (left status); must follow config.keys, which it appends to
-local agent_quota = wezterm.plugin.require 'https://github.com/M-Marbouh/agent-quota.wezterm'
-agent_quota.apply_to_config(config, {
-  position = 'left',
-  layout = 'compact',
-  -- Default CTRL+SHIFT+U would shadow WezTerm's built-in CharSelect
-  dashboard_key = false,
-})
 
 -- Window
 config.enable_scroll_bar = false
