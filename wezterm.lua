@@ -86,8 +86,13 @@ config.colors = {
 }
 
 -- Frosted glass
-config.window_background_opacity = 0.8
+config.window_background_opacity = 0.9
 config.window_decorations = 'RESIZE'
+
+-- Windows equivalent of macos_window_background_blur
+if is_windows then
+  config.win32_system_backdrop = 'Acrylic'
+end
 
 -- Tab bar (used for status bar)
 config.enable_tab_bar = true
@@ -110,7 +115,7 @@ local function sep()
   }
 end
 
-wezterm.on('update-right-status', function(window)
+wezterm.on('update-status', function(window)
   local segments = {}
 
   for _, b in ipairs(wezterm.battery_info()) do
@@ -157,6 +162,15 @@ config.keys = {
   { key = 'DownArrow',  mods = mod_key, action = wezterm.action.ActivatePaneDirection 'Down' },
   { key = 'z',          mods = mod_key, action = wezterm.action.TogglePaneZoomState },
 }
+
+-- Agent quota (left status); must follow config.keys, which it appends to
+local agent_quota = wezterm.plugin.require 'https://github.com/M-Marbouh/agent-quota.wezterm'
+agent_quota.apply_to_config(config, {
+  position = 'left',
+  layout = 'compact',
+  -- Default CTRL+SHIFT+U would shadow WezTerm's built-in CharSelect
+  dashboard_key = false,
+})
 
 -- Window
 config.enable_scroll_bar = false
